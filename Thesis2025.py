@@ -382,22 +382,22 @@ def show_final_analysis(saved, fitness_history):
     saved_best_scores = [evaluate(brain) for _, _, brain in saved]
 
     # ====================================================================
-    # GRAPH 1: PERFECT LANDING PROFILE — ALTITUDE = 0 AT TOUCHDOWN
+    # GRAPH 1: Landing visualized
     # ====================================================================
     plt.figure(figsize=(13, 7))
     ax1 = plt.gca()
 
     # Altitude — now truly 0 at landing
     ax1.plot(time, altitudes, color='#1f77b4', linewidth=4, label='Altitude above landing pad')
-    ax1.set_ylabel('Altitude (pixels)', fontsize=14, color='#1f77b4')
+    ax1.set_ylabel('Altitude', fontsize=14, color='#1f77b4')
     ax1.tick_params(axis='y', labelcolor='#1f77b4')
     ax1.set_ylim(0, max(altitudes) * 1.05 if altitudes else HEIGHT)
     ax1.grid(True, alpha=0.3)
 
     # Speed
     ax2 = ax1.twinx()
-    ax2.plot(time, speed, color='crimson', linewidth=4, label='Velocity magnitude')
-    ax2.set_ylabel('Speed (px/step)', fontsize=14, color='crimson')
+    ax2.plot(time, speed, color='crimson', linewidth=4, label='Velocity')
+    ax2.set_ylabel('Speed', fontsize=14, color='crimson')
     ax2.tick_params(axis='y', labelcolor='crimson')
 
     # Thrust
@@ -409,8 +409,7 @@ def show_final_analysis(saved, fitness_history):
     # Touchdown marker — now at altitude = 0
     ax1.plot(landing_step, 0, 'o', color='gold', markersize=14, markeredgecolor='black', markeredgewidth=2, label='Touchdown')
 
-    ax1.set_title(f'PERFECT LUNAR LANDING — Generation {final_gen}\n'
-                  'Double-Burn Profile: Entry Burn + Suicide Burn',
+    ax1.set_title(f'PERFECT LANDING — Generation {final_gen}\n',
                   fontsize=17, fontweight='bold', pad=20)
     ax1.set_xlabel('Simulation Step', fontsize=14)
 
@@ -423,7 +422,7 @@ def show_final_analysis(saved, fitness_history):
     plt.show()
 
     # ====================================================================
-    # GRAPH 2: Fitness Evolution (unchanged, perfect)
+    # GRAPH 2: Fitness Evolution
     # ====================================================================
     plt.figure(figsize=(12, 6))
     plt.plot(saved_gens, saved_best_scores, 'o-', color='limegreen', linewidth=4,
