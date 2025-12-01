@@ -64,9 +64,10 @@ My advice is any run above 200 generations, is to run it again with a new time s
 <br/>
 The rocket will always eventually land, but it could take forever because it is based on random chance.<br/>
 <br/>
+<br/>
+<br/>
 
-
-
+If you have any questions regarding the code or how it works feel free to message me or send me an email to my university email under my name. I won't disclose it here for obvious reasons. <br/>
 
 
 
