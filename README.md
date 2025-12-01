@@ -5,7 +5,7 @@ You are welcome to try all files. <br/>
 Below I have included guides to each file on how to use them:<br/>
 <br/>
 
-matrix.py ------------------------------------------------------------------------------------------------------------------------------------ <br/>
+matrix.py ----------------------------------------------------------------------------------------------------------------------- <br/>
 
 This file does not run anything on its own. <br/>
 <br/>
