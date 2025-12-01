@@ -5,7 +5,7 @@ You are welcome to try all files. <br/>
 Below I have included guides to each file on how to use them:<br/>
 <br/>
 
-matrix.py ----------------------------------------------------------------------------------------------------------------------- <br/>
+matrix.py ----------------------------------------------------------------------------------------------------------------------<br/>
 
 This file does not run anything on its own. <br/>
 <br/>
@@ -14,7 +14,7 @@ It is purely a library for matrix multiplication used in nn.py!<br/>
 So if you copy nn.py into your own IDE make sure to include this library otherwise nn.py won't work.<br/>
 <br/>
 
-nn.py ----------------------------------------------------------------------------------------------------------------------------------------<br/>
+nn.py ---------------------------------------------------------------------------------------------------------------------------<br/>
 
 This file can be run to see how a neural network works when it is build from scratch. <br/>
 <br/>
@@ -25,7 +25,7 @@ To use it simply run the file and it will start training on the XOR training dat
 Currently it is set to predict (1, 0), but any of the predictions can be un-commented to see the results.<br/>
 <br/>
 
-Thesis2025.py -------------------------------------------------------------------------------------------------------------------------------<br/>
+Thesis2025.py --------------------------------------------------------------------------------------------------------------------<br/>
 
 This is the main file used for training rocket boosters to land and also to produce videos, pictures and graphs.<br/>
 <br/>
