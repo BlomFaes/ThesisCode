@@ -18,17 +18,32 @@ PAD_CENTER_X = 400
 ROCKET_WIDTH = 10
 ROCKET_HEIGHT = 50
 
+# Use these starting conditions to have the rocket come in at an extreme angle with a lot of velocity (the most realistic landing situation)
 START_X = 100
 START_Y = 50
 START_VX = 5
 START_VY = 1
 START_ANGLE = -80
 
+# Use these starting conditions to start the rocket right above the pad.
+# START_X = WIDTH / 2
+# START_Y = 50
+# START_VX = 0
+# START_VY = 0
+# START_ANGLE = -90
+
+# Change this number to see more or less generations!
+# For example, setting this number to 5 will show you every 5th generation
+# Setting it to 1 will show you every single generation etc.
 SAVE_EVERY = 10
+
 POP_SIZE = 50
 MAX_STEPS = 800
 FUEL_START = 350.0
 
+# The mutation rate can also be changed to see what happens
+# Remember this is not whether an agent itself will mutate
+# It will choose based on 20% if the nodes in each brain should be mutated
 MUTATION_RATE = 0.2
 MUTATION_STRENGTH = 1
 
@@ -36,6 +51,7 @@ MUTATION_STRENGTH = 1
 # Brain
 # ------------------------------
 def sigmoid(x):
+    #the normalization function
     return 1 / (1 + math.exp(-max(-500, min(500, x))))
 
 class Brain:
@@ -107,6 +123,8 @@ class Rocket:
 
         if pad_left <= self.x <= pad_right and bottom >= PAD_Y:
             speed = math.hypot(self.vx, self.vy)
+            #The tight landing conditions:
+            #You can play around with these and see it will land very easily when they are increased!
             if speed < 1 and abs(self.angle) < 3 and abs(self.vx) < 0.6:
                 self.landed = True
                 self.vx = self.vy = 0
@@ -132,7 +150,7 @@ def evaluate(brain):
     for _ in range(MAX_STEPS):
         dx = r.x - PAD_CENTER_X
         dist = math.hypot(dx, r.y - PAD_Y)
-        inputs = [
+        inputs = [ #normalizing the inputs in order to evaluate the neural network
             dx / WIDTH,
             (r.y-PAD_Y) / HEIGHT,
             r.vx / 8,
@@ -148,6 +166,7 @@ def evaluate(brain):
         r.update()
         r.check_landing()
 
+        #fitness function
         penalty = dist*5 + abs(dx)*10 + abs(r.angle)*15 + math.hypot(r.vx,r.vy)*70 + abs(r.vx)*150
         best_penalty = min(best_penalty, penalty)
 
@@ -221,7 +240,7 @@ def draw_neural_network(screen, brain, inputs, outputs):
         pygame.draw.circle(screen, (220,220,255), (px, py), 10)
         pygame.draw.circle(screen, (100,100,200), (px, py), 10, 2)
 
-    # Output nodes — SAME SIZE, color only
+    # Output nodes
     for i, (px, py) in enumerate(output_pos):
         active = outputs[i] > 0.5
         col = (255,90,90) if i==0 and active else \
@@ -243,6 +262,7 @@ def draw_neural_network(screen, brain, inputs, outputs):
 # Replay
 # ------------------------------
 def replay_generation(history, gen, is_final=False, best_brain=None):
+    #this entire function is pygame logic which saves a replay of a generation and then replays it using a pygame window
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
@@ -343,7 +363,7 @@ def show_final_analysis(saved, fitness_history):
     if not saved:
         return
 
-    # === Extract final successful landing ===
+    # Final successful landing
     final_gen, final_histories, best_brain = saved[-1]
     traj = final_histories[0]
 
@@ -353,7 +373,6 @@ def show_final_analysis(saved, fitness_history):
 
     time = np.arange(len(traj))
 
-    # === CORRECT ALTITUDE: 0 when bottom of rocket touches pad ===
     altitudes = []
     for step in traj:
         x, y, angle, fuel, thrust, landed, crashed, _ = step
@@ -382,7 +401,7 @@ def show_final_analysis(saved, fitness_history):
     saved_best_scores = [evaluate(brain) for _, _, brain in saved]
 
     # ====================================================================
-    # GRAPH 1: Landing visualized
+    # GRAPH 1:
     # ====================================================================
     plt.figure(figsize=(13, 7))
     ax1 = plt.gca()
@@ -404,12 +423,13 @@ def show_final_analysis(saved, fitness_history):
     ax1.fill_between(time, 0, thrust, color='orange', alpha=0.75, step='pre', label='Main Engine Firing')
 
     # Landing pad zone
-    ax1.axhspan(0, 25, color='green', alpha=0.25, label='Landing Pad Surface')
+    ax1.axhspan(0, 25, color='green', alpha=0.25, label='Landing Pad')
 
     # Touchdown marker — now at altitude = 0
     ax1.plot(landing_step, 0, 'o', color='gold', markersize=14, markeredgecolor='black', markeredgewidth=2, label='Touchdown')
 
-    ax1.set_title(f'PERFECT LANDING — Generation {final_gen}\n',
+    ax1.set_title(f'PERFECT LANDING — Generation {final_gen}\n'
+                  'Entry burn + Landing Burn',
                   fontsize=17, fontweight='bold', pad=20)
     ax1.set_xlabel('Simulation Step', fontsize=14)
 
@@ -422,13 +442,13 @@ def show_final_analysis(saved, fitness_history):
     plt.show()
 
     # ====================================================================
-    # GRAPH 2: Fitness Evolution
+    # GRAPH 2:
     # ====================================================================
     plt.figure(figsize=(12, 6))
     plt.plot(saved_gens, saved_best_scores, 'o-', color='limegreen', linewidth=4,
              markersize=9, markerfacecolor='black', markeredgecolor='black')
     plt.axhline(y=10000, color='gold', linestyle='--', linewidth=3, label='Successful Landing')
-    plt.title('Neuroevolution of Rocket Landing Controller\nBest Fitness Over Generations',
+    plt.title('Neuroevolution of Rocket Landing \nBest Fitness Over Generations',
               fontsize=16, fontweight='bold', pad=20)
     plt.xlabel('Generation', fontsize=14)
     plt.ylabel('Best Fitness Score', fontsize=14)
@@ -453,7 +473,7 @@ while True:
     best = scores[idx[0]]
     print(f"Gen {gen} → Best: {best:.0f}")
     if gen == 1 or gen % SAVE_EVERY == 0 or best >= 10000:
-        fitness_history.append(best)   # Track best fitness when we save
+        fitness_history.append(best)
 
     if gen % SAVE_EVERY == 0 or gen == 1:
         saved.append((gen, record_generation(population), population[0].copy()))
