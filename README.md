@@ -25,7 +25,7 @@ To use it simply run the file and it will start training on the XOR training dat
 Currently it is set to predict (1, 0), but any of the predictions can be un-commented to see the results.<br/>
 <br/>
 
-Thesis2025.py --------------------------------------------------------------------------------------------------------------------<br/>
+Thesis2025.py -----------------------------------------------------------------------------------------------------------------<br/>
 
 This is the main file used for training rocket boosters to land and also to produce videos, pictures and graphs.<br/>
 <br/>
