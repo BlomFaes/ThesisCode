@@ -376,7 +376,7 @@ def show_final_analysis(saved, fitness_history):
     altitudes = []
     for step in traj:
         x, y, angle, fuel, thrust, landed, crashed, _ = step
-        # Reconstruct bottom of rocket (same logic as in Rocket.bottom_y())
+        # Reconstruct bottom of rocket
         a = math.radians(angle)
         c, s = math.cos(a), math.sin(a)
         # Four corner offsets from center
@@ -396,7 +396,7 @@ def show_final_analysis(saved, fitness_history):
     speed = [math.hypot(step[2], step[3]) for step in traj]
     thrust = [90 if step[4] else 0 for step in traj]  # visual bar height
 
-    # === Saved fitness scores ===
+    # Saved fitness scores
     saved_gens = [item[0] for item in saved]
     saved_best_scores = [evaluate(brain) for _, _, brain in saved]
 
@@ -406,7 +406,7 @@ def show_final_analysis(saved, fitness_history):
     plt.figure(figsize=(13, 7))
     ax1 = plt.gca()
 
-    # Altitude — now truly 0 at landing
+    # Altitude
     ax1.plot(time, altitudes, color='#1f77b4', linewidth=4, label='Altitude above landing pad')
     ax1.set_ylabel('Altitude', fontsize=14, color='#1f77b4')
     ax1.tick_params(axis='y', labelcolor='#1f77b4')
@@ -425,7 +425,7 @@ def show_final_analysis(saved, fitness_history):
     # Landing pad zone
     ax1.axhspan(0, 25, color='green', alpha=0.25, label='Landing Pad')
 
-    # Touchdown marker — now at altitude = 0
+    # Touchdown
     ax1.plot(landing_step, 0, 'o', color='gold', markersize=14, markeredgecolor='black', markeredgewidth=2, label='Touchdown')
 
     ax1.set_title(f'PERFECT LANDING — Generation {final_gen}\n'
@@ -433,7 +433,7 @@ def show_final_analysis(saved, fitness_history):
                   fontsize=17, fontweight='bold', pad=20)
     ax1.set_xlabel('Simulation Step', fontsize=14)
 
-    # Legend
+    # Legenda
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper right', fontsize=12, framealpha=0.95)
@@ -467,26 +467,36 @@ fitness_history = []
 
 while True:
     gen += 1
+    #Calculate fitness
     scores = [evaluate(b) for b in population]
+    #Sort all agents based on fitness
     idx = sorted(range(POP_SIZE), key=lambda i: scores[i], reverse=True)
     population = [population[i] for i in idx]
+    # Calculate the best fitness of the generation
     best = scores[idx[0]]
     print(f"Gen {gen} → Best: {best:.0f}")
     if gen == 1 or gen % SAVE_EVERY == 0 or best >= 10000:
+        #Save generations for the replay
         fitness_history.append(best)
 
     if gen % SAVE_EVERY == 0 or gen == 1:
+        # Save generations for the replay
         saved.append((gen, record_generation(population), population[0].copy()))
 
     if best >= 10000:
         print(f"\nLANDING ACHIEVED - GEN {gen}")
+        # Save landing for the replay
         saved.append((gen, record_generation(population), population[0].copy()))
         break
 
+    # Choose the talked about 20% of the population as elites and 'parents' for reproduction
     elites = [p.copy() for p in population[:10]]
+    #Saving the best 10 to ensure no progress is lost
     next_pop = elites[:]
     while len(next_pop) < POP_SIZE:
+        # Reproduction
         child = random.choice(elites).copy()
+        # Mutation
         child.mutate()
         next_pop.append(child)
     population = next_pop
